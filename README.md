@@ -7,7 +7,7 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 ## Architecture
 
 ```
-[ Website / App (Next.js) ]
+[ Website (React+Vite) / App (Next.js) ]
         |
 [ Chat Interface ]
         |
@@ -34,24 +34,42 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 |----------------|----------------------------------------|
 | Backend        | FastAPI, Pydantic                      |
 | AI / Agent     | LangGraph, OpenAI APIs, RAG + Pinecone |
-| Frontend       | Next.js, React, Tailwind CSS           |
+| Website        | React, Vite, Tailwind CSS              |
+| App Frontend   | Next.js, React, Tailwind CSS           |
 | Infrastructure | Docker, Redis, PostgreSQL              |
 
 ## Repository Structure
 
 ```
-/website            Marketing / landing site
+/website            Showcase / landing page (React + Vite)
 /app/frontend       AI Assistant chat UI + admin dashboard
 /app/backend        Core APIs + AI agent
 /docs               Project specs and documentation
-/data               Datasets and rule definitions
+/data               Datasets, knowledge base research, rule definitions
 ```
+
+## AI Agent (LangGraph ReAct)
+
+The core AI uses a ReAct (Reason + Act) pattern built with LangGraph:
+
+```
+Agent Node (LLM reasons + picks tool)
+    ↓ tool call?
+Tools Node (executes tool) ──→ loops back to Agent
+    ↓ final answer?
+Guardrail Node (safety + disclaimers)
+    ↓
+Save Node (persist to PostgreSQL)
+```
+
+**6 tools**: extract_symptoms, check_completeness, calculate_risk_score, search_medical_knowledge, detect_emergency, book_appointment
 
 ## MVP Scope (Phase 1)
 
 - Chat interface for symptom intake
 - Diabetes-focused symptom collection
-- Rule-based triage with risk scoring (green / yellow / red)
+- LangGraph ReAct agent with hybrid risk scoring (green / yellow / red)
+- Safety guardrails with emergency detection
 - Static recommendations and mock booking system
 
 ## Getting Started
