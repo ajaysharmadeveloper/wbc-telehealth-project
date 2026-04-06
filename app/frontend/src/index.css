@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Sora", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  
+  --color-teal: #0D9488;
+  --color-teal-light: #14B8A6;
+  --color-teal-dark: #0F766E;
+  
+  --color-navy: #0F172A;
+  --color-navy-mid: #1E293B;
+  
+  --color-slate: #334155;
+  --color-slate-light: #64748B;
+  --color-border: #E2E8F0;
+  --color-bg: #F8FAFC;
+  --color-white: #FFFFFF;
+  
+  --color-t-green: #16A34A;
+  --color-t-green-bg: #DCFCE7;
+  --color-t-yellow: #CA8A04;
+  --color-t-yellow-bg: #FEF9C3;
+  --color-t-red: #DC2626;
+  --color-t-red-bg: #FEE2E2;
+}
+
+@layer base {
+  :root {
+    --text-color: var(--color-navy);
+    --bg-color: var(--color-bg);
+    --surface-color: var(--color-white);
+    --border-color: var(--color-border);
+    --muted-color: var(--color-slate-light);
+  }
+
+  .dark {
+    --text-color: #F8FAFC;
+    --bg-color: #0B1120;
+    --surface-color: #1E293B;
+    --border-color: #334155;
+    --muted-color: #94A3B8;
+  }
+
+  html, body {
+    @apply antialiased scroll-smooth;
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+  }
+}
+
+@layer components {
+  /* Common UI Elements */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .card {
+    @apply bg-[var(--surface-color)] border border-[var(--border-color)] rounded-xl shadow-sm transition-colors duration-300;
+  }
+  .table-row-hover {
+    @apply hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150 cursor-pointer;
+  }
+}
