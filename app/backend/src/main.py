@@ -31,12 +31,31 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup() -> None:
+    """Run alembic migrations at startup.
+
+    In development we fall back to ``Base.metadata.create_all`` so the first
+    local run works without a separate ``alembic upgrade head`` step. In any
+    other environment, migrations are the source of truth.
+    """
     try:
-        from .db.session import init_db
-        init_db()
-        log.info("Database tables ensured.")
+        from alembic import command
+        from alembic.config import Config as AlembicConfig
+        from pathlib import Path
+
+        ini_path = Path(__file__).resolve().parents[1] / "alembic.ini"
+        cfg = AlembicConfig(str(ini_path))
+        cfg.set_main_option("sqlalchemy.url", settings.database_url)
+        command.upgrade(cfg, "head")
+        log.info("Alembic migrations applied (head).")
     except Exception as exc:
-        log.warning("init_db failed (%s) — running without DB.", exc)
+        log.warning("Alembic upgrade failed (%s).", exc)
+        if settings.app_env == "development":
+            try:
+                from .db.session import init_db
+                init_db()
+                log.info("Dev fallback: Base.metadata.create_all() ran.")
+            except Exception as exc2:
+                log.warning("init_db fallback also failed (%s).", exc2)
 
 
 @app.get("/health")
