@@ -1,0 +1,35 @@
+{
+  "red_keywords": [
+    "fruity breath",
+    "acetone breath",
+    "unconscious",
+    "unresponsive",
+    "loss of consciousness",
+    "passed out",
+    "seizure",
+    "convulsion",
+    "chest pain",
+    "crushing chest pain",
+    "kussmaul",
+    "rapid deep breathing",
+    "struggling to breathe",
+    "confused",
+    "altered mental",
+    "disoriented",
+    "can't stay awake",
+    "dka",
+    "diabetic ketoacidosis",
+    "hhs",
+    "hyperosmolar"
+  ],
+  "red_symptom_combinations": [
+    ["nausea", "vomiting", "high blood sugar"],
+    ["vomiting", "fruity breath"],
+    ["confusion", "high blood sugar"],
+    ["chest pain", "diabetes"]
+  ],
+  "self_reported_numeric_red": {
+    "blood_glucose_mg_dl_high": 300,
+    "blood_glucose_mg_dl_low": 60
+  }
+}

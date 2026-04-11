@@ -1,0 +1,44 @@
+{
+  "ada_diagnosis_criteria": {
+    "fasting_plasma_glucose_mg_dl":   {"diabetes": 126, "prediabetes_low": 100, "prediabetes_high": 125},
+    "ogtt_2hr_glucose_mg_dl":         {"diabetes": 200},
+    "hba1c_percent":                  {"diabetes": 6.5, "prediabetes_low": 5.7, "prediabetes_high": 6.4},
+    "random_glucose_with_symptoms_mg_dl": {"diabetes": 200}
+  },
+  "emergency_thresholds": {
+    "dka": {
+      "blood_glucose_mg_dl_min": 250,
+      "ph_max": 7.3,
+      "bicarbonate_mEq_L_max": 15,
+      "ketones_present": true,
+      "triage_level": "RED"
+    },
+    "hhs": {
+      "blood_glucose_mg_dl_min": 600,
+      "requires_altered_mental_status": true,
+      "triage_level": "RED"
+    },
+    "severe_hypoglycemia": {
+      "blood_glucose_mg_dl_max": 50,
+      "triage_level": "RED"
+    },
+    "hypoglycemia": {
+      "blood_glucose_mg_dl_max": 60,
+      "triage_level": "RED"
+    },
+    "symptomatic_hyperglycemia": {
+      "blood_glucose_mg_dl_min": 300,
+      "requires_symptoms": true,
+      "triage_level": "RED"
+    }
+  },
+  "yellow_conditions": {
+    "moderate_symptom_count_min": 2,
+    "duration_weeks_min": 0.5,
+    "description": "Polyuria + polydipsia + fatigue with recent onset => YELLOW"
+  },
+  "green_conditions": {
+    "description": "Mild/chronic symptoms, known diabetic, stable => GREEN"
+  },
+  "required_patient_fields": ["age", "symptoms", "duration", "severity"]
+}
