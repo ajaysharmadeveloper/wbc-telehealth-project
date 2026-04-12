@@ -1,0 +1,179 @@
+{
+  "info": {
+    "name": "Telehealth Triage AI — Backend",
+    "_postman_id": "d7c3a0b1-6f7b-4c3e-9d1a-telehealthtriage",
+    "description": "Postman collection for the Telehealth Triage AI backend (FastAPI + LangGraph ReAct agent).\n\nAll endpoints are implemented in `app/backend/src/api/`. Start the server with `uvicorn src.main:app --reload` from `app/backend/` and point the `baseUrl` variable at it (default `http://localhost:8000`).\n\nA typical flow:\n1. `GET /health` — verify the server is up.\n2. `POST /chat` (no session_id) — start a new triage conversation. The response includes the generated `session_id`.\n3. `POST /chat` (with session_id) — continue the same conversation; the collection test script saves it into the `session_id` variable automatically.\n4. `GET /session/{session_id}` — fetch the full conversation + patient data + risk_result.\n5. `GET /admin/stats` — aggregate triage metrics for the admin dashboard.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "session_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Liveness probe. Returns `{\"status\": \"ok\", \"env\": \"<app_env>\"}`."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "POST /chat — start new session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('response has session_id and reply', function () {",
+                  "    pm.expect(body).to.have.property('session_id');",
+                  "    pm.expect(body).to.have.property('reply');",
+                  "});",
+                  "if (body.session_id) {",
+                  "    pm.collectionVariables.set('session_id', body.session_id);",
+                  "    console.log('Saved session_id =', body.session_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hi, I've been really thirsty and peeing a lot for 2 weeks. I'm 45 years old and it feels like it's getting worse.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat"]
+            },
+            "description": "Kick off a new triage conversation. Leave `session_id` out of the body and the backend will generate one. The test script automatically stores it in the `session_id` collection variable for subsequent requests."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /chat — continue session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('session_id is preserved', function () {",
+                  "    pm.expect(body.session_id).to.eql(pm.collectionVariables.get('session_id'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"{{session_id}}\",\n  \"message\": \"I also feel very tired and my vision has been blurry.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat"]
+            },
+            "description": "Continue the same triage conversation. Reuses the `session_id` variable saved by the previous request."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /chat — emergency example",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"I feel very confused, I have fruity breath, and my blood sugar is 420 mg/dL.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["chat"]
+            },
+            "description": "Demonstrates the emergency path. `detect_emergency` should flag this and the guardrail node should escalate the risk_result to RED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Session",
+      "item": [
+        {
+          "name": "GET /session/{session_id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/session/{{session_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["session", "{{session_id}}"]
+            },
+            "description": "Return the full conversation history, accumulated `patient_data`, and latest `risk_result` for a session. Returns 404 if the session id is unknown."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "GET /admin/stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "stats"]
+            },
+            "description": "Aggregate counters for the admin dashboard: total sessions, total turns, and triage-band distribution (GREEN / YELLOW / RED)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
