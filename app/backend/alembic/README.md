@@ -29,5 +29,5 @@ alembic history --verbose
 
 - `alembic.ini` — config file at the backend root
 - `alembic/env.py` — bootstraps the URL and `target_metadata` from
-  `src.config.settings` and `src.db.models.Base`
+  `src.config.settings` and `src.models.Base`
 - `alembic/versions/` — one file per migration, applied in order

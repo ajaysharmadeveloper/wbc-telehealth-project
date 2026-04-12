@@ -9,8 +9,8 @@ from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 
 from ..agent.graph import get_compiled_graph
-from ..db.models import ConversationTurn, Session as SessionModel
-from ..db.session import SessionLocal
+from ..models import ConversationTurn, Session as SessionModel
+from ..config.session import SessionLocal
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

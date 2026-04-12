@@ -10,8 +10,8 @@ from typing import Any
 
 from sqlalchemy.orm import Session, sessionmaker
 
-from ..config import settings
-from .models import Base
+from . import settings
+from ..models import Base
 
 _engine: Any = None
 _SessionLocal: sessionmaker | None = None

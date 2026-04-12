@@ -1,5 +1,4 @@
 """Application settings loaded from environment variables."""
-from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,15 +19,13 @@ class Settings(BaseSettings):
     pinecone_environment: str = "us-east-1"
 
     # Database
-    database_url: str = "postgresql+psycopg2://triage:triage@localhost:5432/triage"
+    database_url: str = "postgresql+psycopg2://telehealth:telehealth$2026@postgres:5432/telehealth_db"
 
     # Redis
-    redis_url: str = "redis://localhost:6379/0"
+    redis_url: str = "redis://redis:6379/0"
 
-    # Data paths — default resolves to <repo>/data/rules relative to this file
-    rules_dir: str = str(
-        (Path(__file__).resolve().parents[3] / "data" / "rules")
-    )
+    # Data paths — set via RULES_DIR env var (Docker: /data/rules)
+    rules_dir: str = "/data/rules"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

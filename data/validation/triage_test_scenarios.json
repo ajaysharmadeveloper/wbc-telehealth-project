@@ -1,0 +1,142 @@
+[
+  {
+    "id": "green_001",
+    "input": "I've been a bit more tired than usual lately. I'm 28 and generally healthy.",
+    "expected_level": "GREEN",
+    "expected_symptoms": ["fatigue"],
+    "rationale": "Single mild symptom, young healthy adult, no risk factors"
+  },
+  {
+    "id": "green_002",
+    "input": "I have dry itchy skin on my legs. It's been like this for a few days.",
+    "expected_level": "GREEN",
+    "expected_symptoms": ["dry_skin_itching"],
+    "rationale": "Low-weight symptom, short duration, non-specific to diabetes"
+  },
+  {
+    "id": "green_003",
+    "input": "I'm 45 years old and have type 2 diabetes. My sugar has been stable around 140. Just need a refill on metformin.",
+    "expected_level": "GREEN",
+    "expected_symptoms": [],
+    "rationale": "Known diabetic, stable, no acute symptoms, routine care need"
+  },
+  {
+    "id": "green_004",
+    "input": "I've been feeling a little tired and thirsty today. I think I just didn't drink enough water. I'm 30.",
+    "expected_level": "GREEN",
+    "expected_symptoms": ["fatigue", "polydipsia"],
+    "rationale": "Mild symptoms with situational explanation, young age, single day"
+  },
+  {
+    "id": "yellow_001",
+    "input": "I'm 52 and I've been peeing a lot and feeling really thirsty for about 2 weeks now. I also feel exhausted all the time.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["polyuria", "polydipsia", "fatigue"],
+    "rationale": "Classic triad of diabetes symptoms, 2+ weeks duration, age >35"
+  },
+  {
+    "id": "yellow_002",
+    "input": "I'm 38, my mom has diabetes. For the past week I've had blurry vision and I keep needing to go to the bathroom. I've also lost about 8 pounds without trying.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["blurred_vision", "polyuria", "unexplained_weight_loss"],
+    "rationale": "Multiple diabetes-specific symptoms, family history, unexplained weight loss"
+  },
+  {
+    "id": "yellow_003",
+    "input": "I'm 65, I have diabetes and I stopped taking my medication two weeks ago because I ran out. Now I'm peeing constantly and my vision is blurry.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["polyuria", "blurred_vision"],
+    "rationale": "Known diabetic, medication non-adherence, age amplifier, active symptoms"
+  },
+  {
+    "id": "yellow_004",
+    "input": "I'm 34 and pregnant, about 26 weeks. I've been much more thirsty than usual and urinating frequently. My feet are also tingling.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["polydipsia", "polyuria", "numbness_tingling"],
+    "rationale": "Pregnancy with diabetes-like symptoms, gestational diabetes risk window"
+  },
+  {
+    "id": "yellow_005",
+    "input": "I've had a cut on my foot for 3 weeks and it won't heal. I also get these recurring yeast infections. I'm 48 and overweight.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["slow_healing_wounds", "frequent_infections"],
+    "rationale": "Multiple diabetes indicators, prolonged healing, risk factors present"
+  },
+  {
+    "id": "red_001",
+    "input": "My son is 14 and diabetic. He's been vomiting all day, his breath smells fruity, and he seems confused. His blood sugar reads 380.",
+    "expected_level": "RED",
+    "expected_symptoms": ["polyphagia"],
+    "expected_emergency": true,
+    "rationale": "Classic DKA presentation: vomiting, fruity breath, confusion, high glucose. Medical emergency."
+  },
+  {
+    "id": "red_002",
+    "input": "I'm 72 with type 2 diabetes. My blood sugar is over 500 and I can barely think straight. I feel very confused and extremely dehydrated.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Probable HHS: glucose >500, altered mental status, severe dehydration, elderly"
+  },
+  {
+    "id": "red_003",
+    "input": "I have diabetes and my sugar dropped to 45. I'm shaking badly and feel like I might pass out. I'm alone at home.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Severe hypoglycemia (<54 mg/dL) with near-syncope, alone and unable to self-rescue"
+  },
+  {
+    "id": "red_004",
+    "input": "I'm having chest pain and trouble breathing. I'm 58 and diabetic. The pain started an hour ago.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Chest pain in diabetic patient — possible MI. Emergency regardless of glucose level."
+  },
+  {
+    "id": "red_005",
+    "input": "My grandmother is 80, has diabetes, and she just had a seizure. She's unconscious now. Her blood sugar was 50 before the seizure.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Severe hypoglycemic event with seizure and loss of consciousness. Call 911."
+  },
+  {
+    "id": "red_006",
+    "input": "I'm breathing really fast and deep, I can't stop. I feel nauseous and my stomach hurts badly. I'm type 1 diabetic and I ran out of insulin 2 days ago.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Kussmaul breathing, GI symptoms, insulin omission in T1DM — classic DKA presentation"
+  },
+  {
+    "id": "yellow_006",
+    "input": "I'm 42 and I've noticed numbness in both feet that's been getting worse over the past month. I also have some tingling in my fingers. No diabetes diagnosis but my father had it.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["numbness_tingling"],
+    "rationale": "Progressive neuropathy symptoms, family history, needs evaluation for diabetes"
+  },
+  {
+    "id": "green_005",
+    "input": "I was diagnosed with prediabetes last year. A1C was 5.9. I've been exercising and eating better. Just checking in about what else I should do.",
+    "expected_level": "GREEN",
+    "expected_symptoms": [],
+    "rationale": "Known prediabetes, actively managing with lifestyle, no acute symptoms"
+  },
+  {
+    "id": "yellow_007",
+    "input": "I'm 55 and I've been extremely hungry lately even though I eat normal meals. I've also been losing weight — about 10 pounds in the last month. And I'm always thirsty.",
+    "expected_level": "YELLOW",
+    "expected_symptoms": ["polyphagia", "unexplained_weight_loss", "polydipsia"],
+    "rationale": "Classic diabetes triad with significant unexplained weight loss"
+  },
+  {
+    "id": "red_007",
+    "input": "I just checked my blood sugar and it says 320. I've been throwing up since this morning and I feel terrible. I'm diabetic and took my insulin yesterday but forgot today.",
+    "expected_level": "RED",
+    "expected_symptoms": [],
+    "expected_emergency": true,
+    "rationale": "Glucose >300 with vomiting + insulin omission — high DKA risk, needs emergency evaluation"
+  }
+]

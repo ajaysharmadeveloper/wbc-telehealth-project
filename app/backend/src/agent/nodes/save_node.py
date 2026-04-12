@@ -9,8 +9,8 @@ import logging
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
-from ...db.models import ConversationTurn, Session as SessionModel
-from ...db.session import SessionLocal
+from ...models import ConversationTurn, Session as SessionModel
+from ...config.session import SessionLocal
 from ...services.session_cache import session_cache
 from ..state import AgentState
 

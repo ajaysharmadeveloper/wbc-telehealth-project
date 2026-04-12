@@ -19,7 +19,7 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from src.config import settings  # noqa: E402
-from src.db.models import Base  # noqa: E402
+from src.models import Base  # noqa: E402
 
 config = context.config
 

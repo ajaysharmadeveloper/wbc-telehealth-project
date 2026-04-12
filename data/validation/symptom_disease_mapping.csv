@@ -1,0 +1,44 @@
+symptom,condition,diabetes_relevant,severity_indicator,notes
+frequent urination,type 2 diabetes,yes,moderate,Classic symptom - osmotic diuresis from hyperglycemia
+frequent urination,type 1 diabetes,yes,moderate,Classic symptom - osmotic diuresis
+frequent urination,urinary tract infection,no,low,Differential - need to distinguish from diabetes
+frequent urination,gestational diabetes,yes,moderate,Common in pregnancy - needs glucose testing
+excessive thirst,type 2 diabetes,yes,moderate,Classic symptom - dehydration from polyuria
+excessive thirst,type 1 diabetes,yes,moderate,Classic symptom - dehydration from polyuria
+excessive thirst,dehydration,no,low,Non-specific - needs context
+excessive hunger,type 2 diabetes,yes,moderate,Cells not getting glucose despite high blood sugar
+excessive hunger,type 1 diabetes,yes,moderate,Cells not getting glucose
+excessive hunger,hyperthyroidism,no,low,Differential diagnosis
+unexplained weight loss,type 1 diabetes,yes,high,Body burning fat/muscle for energy - urgent sign
+unexplained weight loss,type 2 diabetes,yes,high,May indicate advanced or uncontrolled diabetes
+unexplained weight loss,cancer,no,high,Differential - needs evaluation
+fatigue,type 2 diabetes,yes,low,Common but non-specific
+fatigue,type 1 diabetes,yes,low,Common but non-specific
+fatigue,anemia,no,low,Differential diagnosis
+fatigue,thyroid disorder,no,low,Differential diagnosis
+blurred vision,diabetic retinopathy,yes,high,Lens swelling from high glucose
+blurred vision,type 2 diabetes,yes,moderate,May be early sign
+blurred vision,hypertension,no,moderate,Differential
+slow healing wounds,type 2 diabetes,yes,moderate,Impaired immune function and circulation
+slow healing wounds,peripheral vascular disease,yes,moderate,Often comorbid with diabetes
+frequent infections,type 2 diabetes,yes,moderate,High glucose impairs immune response
+frequent infections,immunodeficiency,no,moderate,Differential
+numbness tingling hands,diabetic neuropathy,yes,moderate,Nerve damage from chronic high glucose
+numbness tingling feet,diabetic neuropathy,yes,moderate,Most common diabetes complication
+numbness tingling feet,peripheral neuropathy,yes,moderate,May be first sign of undiagnosed diabetes
+dry itchy skin,type 2 diabetes,yes,low,Dehydration and poor circulation
+fruity breath,diabetic ketoacidosis,yes,critical,Acetone from ketone metabolism - EMERGENCY
+nausea vomiting,diabetic ketoacidosis,yes,critical,DKA sign when combined with high glucose
+confusion,diabetic ketoacidosis,yes,critical,Altered mental status - EMERGENCY
+confusion,hyperosmolar hyperglycemic state,yes,critical,HHS with severe dehydration - EMERGENCY
+confusion,severe hypoglycemia,yes,critical,Low glucose affecting brain - EMERGENCY
+seizure,severe hypoglycemia,yes,critical,Blood sugar critically low - EMERGENCY
+loss of consciousness,severe hypoglycemia,yes,critical,EMERGENCY - needs glucagon
+loss of consciousness,diabetic ketoacidosis,yes,critical,EMERGENCY - advanced DKA
+rapid deep breathing,diabetic ketoacidosis,yes,critical,Kussmaul breathing - body compensating for acidosis
+chest pain,myocardial infarction,yes,critical,2-4x risk in diabetics - EMERGENCY
+abdominal pain,diabetic ketoacidosis,yes,high,Common DKA symptom
+dark skin patches,insulin resistance,yes,low,Acanthosis nigricans - screening indicator
+recurrent yeast infections,type 2 diabetes,yes,moderate,High glucose feeds candida
+erectile dysfunction,diabetic neuropathy,yes,moderate,Affects up to 75% of diabetic men
+bed wetting in children,type 1 diabetes,yes,moderate,New onset in previously dry child

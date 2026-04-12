@@ -1,35 +1,49 @@
-version: "3.9"
+name: wbc-telehealth
 
 services:
   postgres:
+    container_name: wbc-telehealth-postgres
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: triage
-      POSTGRES_PASSWORD: triage
-      POSTGRES_DB: triage
+      POSTGRES_USER: telehealth
+      POSTGRES_PASSWORD: telehealth$$2026
+      POSTGRES_DB: telehealth_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - triage_pg_data:/var/lib/postgresql/data
+      - ./docker-data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U telehealth -d telehealth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
+    container_name: wbc-telehealth-redis
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    volumes:
+      - ./docker-data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build: .
+    container_name: wbc-telehealth-backend
+    build: ../app/backend
     env_file:
-      - .env
+      - ../app/backend/.env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
       - ./:/app
       - ../../data:/data:ro
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-
-volumes:
-  triage_pg_data:

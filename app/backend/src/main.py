@@ -51,7 +51,7 @@ def on_startup() -> None:
         log.warning("Alembic upgrade failed (%s).", exc)
         if settings.app_env == "development":
             try:
-                from .db.session import init_db
+                from .config.session import init_db
                 init_db()
                 log.info("Dev fallback: Base.metadata.create_all() ran.")
             except Exception as exc2:

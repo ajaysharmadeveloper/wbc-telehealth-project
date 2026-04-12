@@ -5,8 +5,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
-from ..db.models import Session as SessionModel
-from ..db.session import SessionLocal
+from ..models import Session as SessionModel
+from ..config.session import SessionLocal
 
 router = APIRouter(prefix="/session", tags=["session"])
 
