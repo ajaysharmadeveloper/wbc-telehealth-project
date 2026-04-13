@@ -1,14 +1,14 @@
 {
   "primary_symptoms": {
-    "polyuria":            {"weight": 0.25, "aliases": ["frequent urination", "peeing a lot", "urinating often", "excessive urination"]},
-    "polydipsia":          {"weight": 0.25, "aliases": ["excessive thirst", "very thirsty", "really thirsty", "always thirsty", "thirsty", "dry mouth"]},
+    "polyuria":            {"weight": 0.25, "aliases": ["frequent urination", "peeing a lot", "urinating often", "urinating a lot", "urinating frequently", "excessive urination", "need to pee", "pee a lot", "wetting the bed", "bed wetting"]},
+    "polydipsia":          {"weight": 0.25, "aliases": ["excessive thirst", "very thirsty", "really thirsty", "always thirsty", "thirsty", "dry mouth", "increased thirst", "drinking water constantly", "drinking a lot of water", "dehydrated", "extremely dehydrated", "dehydration"]},
     "polyphagia":          {"weight": 0.15, "aliases": ["excessive hunger", "always hungry", "increased appetite"]},
-    "unexplained_weight_loss": {"weight": 0.20, "aliases": ["losing weight", "weight loss", "lost weight"]},
-    "fatigue":             {"weight": 0.15, "aliases": ["tired", "lethargy", "exhausted", "no energy"]},
-    "blurred_vision":      {"weight": 0.20, "aliases": ["vision blurry", "can't see clearly", "vision problems"]},
+    "unexplained_weight_loss": {"weight": 0.20, "aliases": ["losing weight", "weight loss", "lost weight", "losing weight rapidly", "rapid weight loss"]},
+    "fatigue":             {"weight": 0.15, "aliases": ["tired", "lethargy", "exhausted", "no energy", "very tired", "really tired", "feeling tired", "seems very tired"]},
+    "blurred_vision":      {"weight": 0.20, "aliases": ["vision blurry", "can't see clearly", "vision problems", "blurred vision", "vision is going dark", "vision going dark"]},
     "slow_healing_wounds": {"weight": 0.20, "aliases": ["slow healing", "wounds don't heal", "sores not healing"]},
     "frequent_infections": {"weight": 0.15, "aliases": ["keep getting infections", "recurring infections"]},
-    "numbness_tingling":   {"weight": 0.20, "aliases": ["numb hands", "numb feet", "tingling", "pins and needles"]},
+    "numbness_tingling":   {"weight": 0.20, "aliases": ["numb hands", "numb feet", "tingling", "pins and needles", "tingling in my feet", "numbness"]},
     "dry_skin_itching":    {"weight": 0.10, "aliases": ["itchy skin", "dry skin", "itching"]}
   },
   "severity_multipliers": {

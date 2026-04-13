@@ -27,6 +27,17 @@ class Settings(BaseSettings):
     # Data paths — set via RULES_DIR env var (Docker: /data/rules)
     rules_dir: str = "/data/rules"
 
+    # Mem0
+    mem0_enabled: bool = True
+
+    # Telegram Bot
+    telegram_bot_token: str = ""
+    telegram_enabled: bool = False
+
+    # Conversation context — dual threshold summarization
+    context_token_limit: int = 2000
+    context_max_raw_messages: int = 5
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
