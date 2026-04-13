@@ -7,7 +7,7 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 ## Architecture
 
 ```
-[ Website (React+Vite) / App (Next.js) ]
+[ Website (React+Vite) / App (Next.js) / Telegram Bot ]
         |
 [ Chat Interface ]
         |
@@ -34,6 +34,7 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 |----------------|----------------------------------------|
 | Backend        | FastAPI, Pydantic                      |
 | AI / Agent     | LangGraph, OpenAI APIs, RAG + Pinecone |
+| Telegram Bot   | python-telegram-bot (polling)          |
 | Website        | React, Vite, Tailwind CSS              |
 | App Frontend   | Next.js, React, Tailwind CSS           |
 | Database       | PostgreSQL 16                          |
@@ -48,7 +49,13 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 /app/backend          Core APIs + AI agent (FastAPI/Python) — see app/backend/README.md
 /docs                 Project specs and documentation
 /data                 Datasets, knowledge base, rule definitions
+  /data/knowledge     Markdown knowledge base (10 files across 4 categories)
+    /emergency_protocols   DKA, HHS, hypoglycemia (priority 1.0)
+    /screening_diagnosis   ADA 2026 diagnostic criteria (priority 0.8)
+    /ada_guidelines        Diabetes types, management, risk factors (priority 0.7)
+    /patient_education     Symptoms, self-care, complications (priority 0.5)
   /data/rules         JSON rule files (symptom mappings, emergency keywords, thresholds)
+  /data/validation    Test scenarios and symptom-disease mappings
 ```
 
 ## Quick Start
@@ -58,6 +65,8 @@ An AI-driven triage system that helps small clinics pre-screen patients for diab
 - Docker & Docker Compose
 - Node.js 18+
 - OpenAI API key
+- Pinecone API key (for RAG knowledge base)
+- Telegram bot token (optional, from [@BotFather](https://t.me/BotFather))
 
 ### 1. Backend (API + Database + Cache)
 
@@ -66,7 +75,7 @@ cd app/backend
 
 # Configure environment
 cp .env.example .env
-# Edit .env — add your OPENAI_API_KEY
+# Edit .env — add OPENAI_API_KEY and PINECONE_API_KEY
 
 # Start all services
 docker compose up -d
@@ -81,6 +90,38 @@ This starts three containers:
 | wbc-telehealth-redis    | 6379  | Redis 7               |
 
 Database migrations run automatically on startup.
+
+### Knowledge Base Ingestion (Pinecone)
+
+```bash
+# Ingest knowledge base into Pinecone (run once, or after updating /data/knowledge)
+docker exec wbc-telehealth-backend python -m src.rag.ingest
+```
+
+This chunks 10 markdown files into 103 vectors, embeds with OpenAI `text-embedding-3-small`, and upserts to the `telehealth-diabetes-kb` Pinecone index (serverless, cosine, 1536-dim).
+
+### 4. Telegram Bot (Optional)
+
+Set these in `app/backend/.env`:
+```bash
+TELEGRAM_BOT_TOKEN=your-token-from-botfather
+TELEGRAM_ENABLED=true
+```
+
+Restart the backend (`make up-build`). The bot starts automatically alongside FastAPI in the same container.
+
+| Feature | Details |
+|---------|---------|
+| Session | Persistent per Telegram user (`tg_{chat_id}`) |
+| Commands | `/start` (welcome), `/reset` (clear session) |
+| Agent | Same LangGraph graph — direct invocation, no HTTP |
+| Storage | Same Postgres DB (`sessions`, `conversation_turns`) |
+| Health | `GET /health` → `"telegram": "running"` |
+
+Query Telegram sessions:
+```sql
+SELECT * FROM sessions WHERE id LIKE 'tg_%';
+```
 
 **API URLs:**
 - Health check: http://localhost:8000/health
@@ -125,7 +166,7 @@ Save Node (persist to PostgreSQL + Redis)
 | `extract_symptoms`          | Parse patient text → structured symptoms, age, etc.  |
 | `check_completeness`        | Validate required patient fields are present         |
 | `calculate_risk_score`      | Hybrid rule engine → GREEN / YELLOW / RED            |
-| `search_medical_knowledge`  | RAG lookup from Pinecone or fallback KB              |
+| `search_medical_knowledge`  | RAG lookup from Pinecone (103 vectors, priority-weighted re-ranking) |
 | `detect_emergency`          | Flag RED-level emergencies                           |
 | `book_appointment`          | Mock appointment booking (MVP)                       |
 

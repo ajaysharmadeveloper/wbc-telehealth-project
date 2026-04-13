@@ -60,9 +60,34 @@ def on_startup() -> None:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "env": settings.app_env}
+    from .telegram.bot import _application
+    tg_status = "disabled"
+    if settings.telegram_enabled:
+        tg_status = "running" if _application is not None else "failed"
+    return {"status": "ok", "env": settings.app_env, "telegram": tg_status}
 
 
 app.include_router(chat_api.router)
 app.include_router(session_api.router)
 app.include_router(admin_api.router)
+
+
+@app.on_event("startup")
+def start_telegram_bot() -> None:
+    """Launch Telegram bot polling in a background thread if enabled."""
+    try:
+        from .telegram.bot import start_bot
+        start_bot()
+    except Exception as exc:
+        log.warning("Telegram bot startup failed (%s).", exc)
+
+
+@app.on_event("shutdown")
+def stop_telegram_bot() -> None:
+    """Gracefully stop the Telegram bot."""
+    try:
+        from .telegram.bot import stop_bot
+        stop_bot()
+    except Exception as exc:
+        log.warning("Telegram bot shutdown failed (%s).", exc)
+

@@ -87,13 +87,32 @@ def calculate_risk_score(patient_data: dict[str, Any]) -> dict[str, Any]:
     dur_mul = rules["duration_multipliers"].get(duration, 1.0)
     symptom_score = min(base * sev_mul * dur_mul, 1.0)
 
+    # Self-reported glucose adds a base score component (ADA thresholds)
+    glucose = patient_data.get("self_reported_glucose")
+    glucose_score = 0.0
+    if glucose is not None:
+        if glucose >= 300:
+            glucose_score = 0.70   # RED territory — symptomatic hyperglycemia
+        elif glucose >= 200:
+            glucose_score = 0.45   # YELLOW — above random diagnostic threshold
+        elif glucose >= 126:
+            glucose_score = 0.35   # YELLOW — at/above fasting diagnostic threshold
+        elif glucose >= 100:
+            glucose_score = 0.15   # GREEN — prediabetes range
+
+    combined_base = min(max(symptom_score, glucose_score), 1.0)
+
     amp_score, amp_matched = _apply_amplifiers(patient_data)
-    total = min(symptom_score + amp_score, 1.0)
+    total = min(combined_base + amp_score, 1.0)
     band = _band_for_score(total)
+
+    contributing: dict[str, Any] = {"symptoms": symptoms, "amplifiers": amp_matched}
+    if glucose is not None:
+        contributing["self_reported_glucose"] = glucose
 
     return {
         "level": band["label"],
         "score": round(total, 3),
         "recommendation": band["recommendation"],
-        "contributing": {"symptoms": symptoms, "amplifiers": amp_matched},
+        "contributing": contributing,
     }

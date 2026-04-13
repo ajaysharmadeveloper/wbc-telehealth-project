@@ -1,12 +1,13 @@
 {
   "amplifiers": [
-    {"key": "age_over_60",                "condition": {"field": "age", "op": ">", "value": 60},           "weight": 0.10},
-    {"key": "known_diabetic_new_symptoms","condition": {"field": "known_diabetes", "op": "==", "value": true}, "weight": 0.15},
-    {"key": "medication_non_adherence",   "condition": {"field": "medication_adherent", "op": "==", "value": false}, "weight": 0.10},
-    {"key": "multi_symptom",              "condition": {"field": "symptom_count", "op": ">=", "value": 3},  "weight": 0.10},
-    {"key": "long_duration",              "condition": {"field": "duration_weeks", "op": ">", "value": 2},  "weight": 0.10},
-    {"key": "family_history",             "condition": {"field": "family_history_diabetes", "op": "==", "value": true}, "weight": 0.05},
-    {"key": "pregnancy_with_symptoms",    "condition": {"field": "pregnant", "op": "==", "value": true},    "weight": 0.10}
+    {"key": "age_over_60",                  "condition": {"field": "age", "op": ">", "value": 60},           "weight": 0.10},
+    {"key": "known_diabetic_new_symptoms",  "condition": {"field": "known_diabetes", "op": "==", "value": true}, "weight": 0.15},
+    {"key": "medication_non_adherence",     "condition": {"field": "medication_adherent", "op": "==", "value": false}, "weight": 0.10},
+    {"key": "multi_symptom",                "condition": {"field": "symptom_count", "op": ">=", "value": 3},  "weight": 0.10},
+    {"key": "long_duration",                "condition": {"field": "duration_weeks", "op": ">", "value": 2},  "weight": 0.10},
+    {"key": "family_history",               "condition": {"field": "family_history_diabetes", "op": "==", "value": true}, "weight": 0.05},
+    {"key": "pregnancy_with_symptoms",      "condition": {"field": "pregnant", "op": "==", "value": true},    "weight": 0.10},
+    {"key": "history_gestational_diabetes", "condition": {"field": "history_gestational_diabetes", "op": "==", "value": true}, "weight": 0.15}
   ],
-  "max_amplifier_contribution": 0.30
+  "max_amplifier_contribution": 0.35
 }

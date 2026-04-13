@@ -67,14 +67,15 @@ def guardrail_node(state: AgentState) -> dict:
     if DISCLAIMER.strip() not in cleaned:
         cleaned = cleaned.rstrip() + DISCLAIMER
 
-    # Emergency escalation from prior tool output if any
+    # Emergency escalation: tools_node already normalizes detect_emergency
+    # results into standard risk_result format with level/score/recommendation.
+    # Here we just ensure the risk can only go UP, never down.
     risk_result = state.get("risk_result")
     emergency_override = None
-    for m in reversed(messages):
-        meta = getattr(m, "artifact", None) or getattr(m, "additional_kwargs", {})
-        if isinstance(meta, dict) and meta.get("triage_override") == "RED":
+    if risk_result and isinstance(risk_result, dict):
+        contrib = risk_result.get("contributing", {})
+        if contrib.get("emergency_override"):
             emergency_override = "RED"
-            break
     updated_risk = _escalate_risk(risk_result, emergency_override)
 
     new_msg = AIMessage(content=cleaned, id=getattr(last, "id", None))

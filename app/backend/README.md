@@ -164,11 +164,15 @@ app/backend/
 │   │   └── prompts/
 │   │       └── system_prompt.py   # Agent system prompt — triage role, tool usage, disclaimers
 │   ├── rag/
-│   │   └── client.py              # Pinecone vector DB client (with graceful fallback)
+│   │   ├── client.py              # Pinecone vector DB client (priority-weighted re-ranking)
+│   │   └── ingest.py              # Knowledge base ingestion pipeline (chunk → embed → upsert)
 │   ├── rules/
 │   │   └── loader.py              # Loads JSON rule files from RULES_DIR
 │   └── services/
-│       └── session_cache.py       # Redis session cache wrapper (1-hour TTL)
+│       ├── session_cache.py       # Redis session cache wrapper (1-hour TTL)
+│       ├── memory.py              # Conversation memory service
+│       ├── summarizer.py          # Conversation summarization service
+│       └── background_tasks.py    # Background task runner
 │
 ├── tests/                         # Test suite
 │   ├── conftest.py                # Pytest config, adds src/ to sys.path
@@ -184,7 +188,8 @@ app/backend/
 ├── alembic/                       # Database migrations
 │   ├── env.py                     # Migration env (reads settings + models)
 │   └── versions/
-│       └── 20260411_0001_initial_schema.py  # Creates sessions + conversation_turns tables
+│       ├── 20260411_0001_initial_schema.py  # Creates sessions + conversation_turns tables
+│       └── 20260413_0002_add_conversation_summary.py  # Adds conversation summary column
 │
 ├── docker-data/                   # Persistent Docker data (gitignored)
 │   ├── postgres/                  # PostgreSQL data files
@@ -222,7 +227,7 @@ START → agent_node → [tools_node ⟲ agent_node] → guardrail_node → save
 | `calculate_risk_score`      | Hybrid rule engine → GREEN / YELLOW / RED                 |
 | `check_completeness`        | Validate required patient fields are present              |
 | `book_appointment`          | Mock appointment booking (MVP)                            |
-| `search_medical_knowledge`  | RAG lookup from Pinecone or fallback knowledge base       |
+| `search_medical_knowledge`  | RAG lookup from Pinecone (103 vectors, priority-weighted)  |
 
 ### Risk Levels
 
@@ -318,6 +323,49 @@ cd app/backend && PYTHONPATH=. pytest -v
 | test_book_appointment.py     | Mock booking returns confirmed slot                |
 | test_graph_flow.py           | End-to-end graph routing (mocked LLM)             |
 | test_guardrail.py            | Disclaimer append, diagnosis language scrubbing    |
+
+---
+
+## Knowledge Base (Pinecone RAG)
+
+The agent uses a Retrieval-Augmented Generation (RAG) pipeline backed by Pinecone to provide evidence-based medical context.
+
+### Data Source
+
+10 curated markdown files in `/data/knowledge/` across 4 categories:
+
+| Category | Directory | Files | Priority | Content |
+|----------|-----------|-------|----------|---------|
+| Emergency Protocols | `emergency_protocols/` | 3 | 1.0 | DKA, HHS, hypoglycemia |
+| Screening & Diagnosis | `screening_diagnosis/` | 1 | 0.8 | ADA 2026 diagnostic criteria |
+| ADA Guidelines | `ada_guidelines/` | 3 | 0.7 | Diabetes types, management, risk factors |
+| Patient Education | `patient_education/` | 3 | 0.5 | Symptoms, self-care, complications |
+
+### Ingestion Pipeline (`src/rag/ingest.py`)
+
+```bash
+# Run from Docker container
+docker exec wbc-telehealth-backend python -m src.rag.ingest
+
+# Or with a custom data directory
+docker exec wbc-telehealth-backend python -m src.rag.ingest --data-dir /path/to/knowledge
+```
+
+Pipeline steps:
+1. Reads all `.md` files from `/data/knowledge/`
+2. Chunks with `RecursiveCharacterTextSplitter` (800 chars, 150 overlap, markdown-aware separators)
+3. Extracts document titles, section headers, and 34 medical keywords per chunk
+4. Embeds via OpenAI `text-embedding-3-small` (1536-dim) in batches of 256
+5. Creates/verifies Pinecone serverless index (`telehealth-diabetes-kb`, cosine metric)
+6. Upserts 103 vectors in batches of 100 with deterministic IDs (SHA256 hash)
+
+### Search & Re-ranking (`src/rag/client.py`)
+
+- Fetches `top_k * 2` results from Pinecone
+- Re-ranks by: `weighted_score = cosine_score * (0.5 + 0.5 * priority)`
+- Emergency protocols (priority 1.0) get full cosine score
+- Patient education (priority 0.5) get 75% of cosine score
+- Returns top 5 results with enriched text, source, category, and keywords
 
 ---
 

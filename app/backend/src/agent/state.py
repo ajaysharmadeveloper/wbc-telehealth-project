@@ -19,3 +19,5 @@ class AgentState(TypedDict, total=False):
     patient_data: dict[str, Any]
     risk_result: dict[str, Any] | None
     turn_count: int
+    conversation_summary: str
+    mem0_context: str

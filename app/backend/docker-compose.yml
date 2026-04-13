@@ -33,9 +33,9 @@ services:
 
   backend:
     container_name: wbc-telehealth-backend
-    build: ../app/backend
+    build: .
     env_file:
-      - ../app/backend/.env
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
