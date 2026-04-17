@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# AI crawlers (AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://wbc-telehealth-project.vercel.app/sitemap.xml
+
+# LLM context files (llmstxt.org)
+# Crawlers and LLMs can fetch these directly:
+#   https://wbc-telehealth-project.vercel.app/llms.txt
+#   https://wbc-telehealth-project.vercel.app/llms-full.txt

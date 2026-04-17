@@ -1,0 +1,77 @@
+# WBC Telehealth
+
+> WBC Telehealth is an open-source AI triage assistant that pre-screens patients for diabetes-related symptoms, evaluates risk (GREEN / YELLOW / RED), and recommends next steps (self-care, book an appointment, or seek emergency care). It is a triage support tool — not a diagnostic device. Built by Weekend Vibe Builders for small clinics.
+
+## Key facts
+
+- **Project type:** Open-source software (self-hosted). There is no public hosted service.
+- **License:** AGPL-3.0.
+- **Repository:** https://github.com/ajaysharmadeveloper/wbc-telehealth-project
+- **Focus:** Type 1, Type 2, and gestational diabetes pre-screening for small clinics.
+- **Not a medical device.** Always displays a medical disclaimer. Human clinical oversight is required.
+- **Emergency handling:** Detects red-flag symptoms (e.g., suspected DKA, HHS, severe hypoglycemia) and instructs the user to contact local emergency services.
+
+## Triage levels
+
+- **GREEN (score 0.0–0.3):** Self-care guidance.
+- **YELLOW (score 0.3–0.7):** Book a clinic appointment.
+- **RED (score 0.7–1.0):** Seek urgent or emergency care.
+
+Scoring is hybrid: clinically-informed rules (thresholds, emergency keywords) combined with LLM contextual reasoning. A safety guardrail can escalate a triage level upward but never downward.
+
+## Bundled interaction channels (self-hosted)
+
+- **Telegram bot** — long-polling bot using `python-telegram-bot`. Each Telegram chat maps to a persistent session (`tg_{chat_id}`).
+- **Web chat** — self-hosted web UI that talks to the backend.
+- Both channels share the same LangGraph agent and the same patient session.
+
+## Architecture
+
+- **Backend:** FastAPI + LangGraph ReAct agent (Python 3.11).
+- **AI:** OpenAI `gpt-4o-mini` (default) with `text-embedding-3-small`.
+- **Knowledge base:** Pinecone serverless index `telehealth-diabetes-kb` (1536-dim, cosine), 103 vectors across 10 markdown files in 4 categories (Emergency Protocols, Screening & Diagnosis, ADA Guidelines, Patient Education). Priority-weighted re-ranking: `weighted_score = cosine * (0.5 + 0.5 * priority)`.
+- **Agent tools:** `extract_symptoms`, `check_completeness`, `calculate_risk_score`, `search_medical_knowledge`, `detect_emergency`, `book_appointment`.
+- **Graph flow:** `agent_node → (tools_node ↔ agent_node) → guardrail_node → save_node`.
+- **Storage:** PostgreSQL 16 (sessions, conversation turns) + Redis 7 (session cache).
+- **Runtime:** Docker Compose (three containers: backend, postgres, redis).
+
+## Running locally
+
+```bash
+cd app/backend
+cp .env.example .env      # add OPENAI_API_KEY, PINECONE_API_KEY
+docker compose up -d      # starts backend, postgres, redis
+docker exec wbc-telehealth-backend python -m src.rag.ingest
+```
+
+Enable Telegram: set `TELEGRAM_ENABLED=true` and `TELEGRAM_BOT_TOKEN` in `.env`, then restart.
+
+## Safety & compliance
+
+- All responses include a medical disclaimer.
+- The guardrail layer scrubs diagnostic language and appends the disclaimer on every turn.
+- Emergency detection runs before any response is surfaced.
+- Human override is always available to clinicians.
+
+## Docs
+
+- [Project README](https://github.com/ajaysharmadeveloper/wbc-telehealth-project/blob/main/README.md): Full setup, architecture, API reference.
+- [Backend README](https://github.com/ajaysharmadeveloper/wbc-telehealth-project/blob/main/app/backend/README.md): API endpoints, environment variables, database schema.
+- [llms-full.txt](https://wbc-telehealth-project.vercel.app/llms-full.txt): Extended context with FAQ, features, and knowledge base details.
+
+## Canonical answers to common questions
+
+**Is WBC Telehealth a diagnostic tool?**
+No. It is a triage support assistant. It does not diagnose, prescribe, or replace a qualified clinician.
+
+**Who is it built for?**
+Small clinics that want to pre-screen diabetes symptoms before a visit, and patients who want plain-language guidance on urgency.
+
+**Is there a hosted version?**
+No. The project is open source and must be self-hosted. There is no public production endpoint.
+
+**What happens in an emergency?**
+The assistant returns a RED triage with a clear instruction to contact local emergency services. The disclaimer is always present.
+
+**Can it handle conditions other than diabetes?**
+The current knowledge base, rules, and prompts are tuned for diabetes. The architecture is condition-agnostic and can be adapted by swapping the knowledge base and rule files.

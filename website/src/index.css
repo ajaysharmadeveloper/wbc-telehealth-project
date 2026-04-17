@@ -1,1 +1,20 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@import './styles/globals.css';
+@import './styles/buttons.css';
+@import './styles/section-header.css';
+
+@import './layout/Navbar.css';
+@import './layout/Footer.css';
+
+@import './sections/Hero/Hero.css';
+@import './sections/Problem/Problem.css';
+@import './sections/Solution/Solution.css';
+@import './sections/Features/Features.css';
+@import './sections/HowItWorks/HowItWorks.css';
+@import './sections/Demo/Demo.css';
+@import './sections/FAQ/FAQ.css';
+@import './sections/CTA/CTA.css';
+
+@import './pages/About.css';

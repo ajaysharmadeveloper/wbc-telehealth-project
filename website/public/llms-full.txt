@@ -1,0 +1,258 @@
+# WBC Telehealth — Full LLM Reference
+
+> WBC Telehealth is an open-source AI triage assistant for diabetes pre-screening in small clinics. It collects patient symptoms via chat, evaluates risk, and recommends next steps. Not a diagnostic tool. Built by Weekend Vibe Builders. AGPL-3.0.
+
+## 1. One-line summary
+
+WBC Telehealth pre-screens patients for diabetes-related symptoms via chat and returns a color-coded triage recommendation (GREEN / YELLOW / RED) with next-step guidance.
+
+## 2. What it is
+
+- An **open-source software project** that clinics self-host.
+- A **triage support assistant**, not a diagnostic or prescribing tool.
+- Designed for **small clinics** with limited staff, to pre-screen patients before a visit.
+- Covers **diabetes Type 1, Type 2, and gestational** symptoms, risk factors, and red-flag emergencies.
+- Safety-first by design: emergency detection, mandatory disclaimers, human override.
+
+## 3. What it is not
+
+- Not a diagnostic device.
+- Not FDA-cleared or CE-marked.
+- Not a hosted SaaS. There is no live production endpoint. Clinics must self-host.
+- Not a replacement for a clinician.
+- Not a general-purpose symptom checker — the knowledge base is diabetes-focused.
+
+## 4. Who uses it
+
+| Audience | How they use it |
+|---|---|
+| Patients | Describe symptoms in plain language via Telegram or the self-hosted web chat. Receive a clear GREEN / YELLOW / RED result with next steps. |
+| Small clinics | Self-host the stack to pre-screen patients before their visit and get structured intake data. |
+| Developers / contributors | Fork the repo, swap the knowledge base to adapt to other conditions, or contribute improvements upstream. |
+
+## 5. Triage levels
+
+| Level | Score | Recommended action |
+|---|---|---|
+| GREEN | 0.0 – 0.3 | Self-care guidance |
+| YELLOW | 0.3 – 0.7 | Book a clinic appointment |
+| RED | 0.7 – 1.0 | Seek urgent or emergency care |
+
+Scoring is a **hybrid of clinical rules and LLM reasoning**:
+- Rule layer uses JSON-defined symptom mappings, emergency keywords, thresholds, and amplifiers (located in `/data/rules`).
+- LLM reasoning adds context from free-text patient input.
+- The **guardrail layer can escalate a level upward but never downward**, so urgent cases are never under-triaged.
+
+## 6. Interaction channels (bundled, self-hosted)
+
+### Telegram bot
+
+- Library: `python-telegram-bot` (long-polling).
+- Runs in the same FastAPI process as the API, on a daemon thread.
+- Commands: `/start` (welcome message), `/reset` (clear the current session).
+- Session mapping: Telegram `chat_id` → persistent session id `tg_{chat_id}`.
+- Invokes the LangGraph agent directly (no internal HTTP call).
+- Enabled by setting `TELEGRAM_ENABLED=true` and `TELEGRAM_BOT_TOKEN=...` in `.env`.
+- Health: `GET /health` returns `"telegram": "running"` when active.
+
+### Web chat
+
+- Self-hosted web UI.
+- Backed by the same FastAPI `/chat` endpoint.
+- Shares the same PostgreSQL session store as the Telegram bot — so one patient can switch channels without losing context.
+
+## 7. Architecture
+
+```
+[ Telegram bot  /  Web chat ]
+            ↓
+        FastAPI
+            ↓
+  LangGraph ReAct agent
+        (OpenAI)
+            ↓
+  [ PostgreSQL + Redis + Pinecone ]
+```
+
+### LangGraph agent nodes
+
+1. **agent_node** — LLM with tool bindings. Decides which tool to call or produces a final reply.
+2. **tools_node** — Executes the selected tool and returns the result to the agent. Loops until the agent produces a final reply.
+3. **guardrail_node** — Scrubs diagnosis language, appends the medical disclaimer, and escalates risk if emergency signals are present.
+4. **save_node** — Persists the turn to PostgreSQL and refreshes the Redis cache.
+
+Flow: `START → agent_node → [tools_node ↻ agent_node] → guardrail_node → save_node → END`.
+
+### Agent tools
+
+| Tool | Purpose |
+|---|---|
+| `extract_symptoms` | Parse free-text input into structured symptoms, age, duration, severity. |
+| `check_completeness` | Validate required patient fields are present. |
+| `calculate_risk_score` | Hybrid rule + LLM risk scoring → GREEN / YELLOW / RED. |
+| `search_medical_knowledge` | RAG lookup against the Pinecone knowledge base with priority-weighted re-ranking. |
+| `detect_emergency` | Flag RED-level emergencies using keywords and glucose thresholds. |
+| `book_appointment` | Mock appointment booking (MVP). |
+
+## 8. Knowledge base (RAG)
+
+- **Index:** `telehealth-diabetes-kb` (Pinecone serverless, cosine, 1536 dimensions).
+- **Embedding model:** OpenAI `text-embedding-3-small`.
+- **Source:** 10 curated markdown files in `/data/knowledge/`, chunked to 800 chars with 150-char overlap (markdown-aware separators). 103 vectors total.
+- **Metadata:** Up to 34 medical keywords extracted per chunk.
+- **Re-ranking:** `weighted_score = cosine * (0.5 + 0.5 * priority)`.
+
+### Categories and priorities
+
+| Category | Directory | Files | Priority | Example content |
+|---|---|---|---|---|
+| Emergency Protocols | `emergency_protocols/` | 3 | 1.0 | DKA, HHS, severe hypoglycemia |
+| Screening & Diagnosis | `screening_diagnosis/` | 1 | 0.8 | ADA 2026 diagnostic criteria |
+| ADA Guidelines | `ada_guidelines/` | 3 | 0.7 | Diabetes types, management, risk factors |
+| Patient Education | `patient_education/` | 3 | 0.5 | Symptoms, self-care, complications |
+
+## 9. Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | FastAPI 0.115, Pydantic 2.9, SQLAlchemy 2.0, Alembic |
+| Agent | LangGraph 0.2.34, LangChain 0.3 |
+| LLM | OpenAI `gpt-4o-mini` (default) |
+| Embeddings | OpenAI `text-embedding-3-small` (1536-dim) |
+| Vector DB | Pinecone (serverless) |
+| Database | PostgreSQL 16 |
+| Cache | Redis 7 |
+| Telegram | python-telegram-bot (polling) |
+| Website | React 19, Vite, Tailwind CSS v4 |
+| Provider Dashboard | React 19 + Vite (separate package) |
+| Infra | Docker, Docker Compose |
+
+## 10. API endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/chat` | Send a patient message through the triage agent. |
+| GET | `/session/{id}` | Retrieve full conversation history and patient data. |
+| GET | `/admin/stats` | Aggregate metrics for the provider dashboard. |
+| GET | `/health` | Health check. Reports Telegram status when enabled. |
+
+### POST /chat — example
+
+```json
+// Request
+{
+  "session_id": "sess_abc123",
+  "message": "I've been very thirsty and urinating frequently for a week"
+}
+
+// Response
+{
+  "session_id": "sess_abc123",
+  "reply": "Based on your symptoms...",
+  "risk_result": {
+    "level": "YELLOW",
+    "score": 0.55,
+    "recommendation": "Book clinic appointment",
+    "contributing": { "symptoms": ["polydipsia", "polyuria"], "amplifiers": [] }
+  },
+  "turn_count": 1
+}
+```
+
+## 11. Data model
+
+### sessions
+
+| Column | Type | Notes |
+|---|---|---|
+| id | VARCHAR(64) | Primary key |
+| user_id | VARCHAR(64) | Indexed |
+| patient_data | JSON | Accumulated symptom data |
+| risk_result | JSON | Latest triage result |
+| turn_count | INTEGER | Number of conversation turns |
+| conversation_summary | TEXT | Rolling summary used for context windowing |
+| created_at / updated_at | DATETIME | Timestamps |
+
+### conversation_turns
+
+| Column | Type | Notes |
+|---|---|---|
+| id | INTEGER | Auto-increment |
+| session_id | VARCHAR(64) | FK → sessions (CASCADE delete) |
+| role | VARCHAR(16) | `user`, `assistant`, or `tool` |
+| content | TEXT | Message content |
+| tool_name | VARCHAR(64) | Tool name if role=tool |
+| meta | JSON | Extra metadata |
+| created_at | DATETIME | Timestamp |
+
+## 12. Safety, compliance, and disclaimers
+
+- Every assistant turn includes a medical disclaimer.
+- The guardrail layer scrubs diagnostic language (e.g., "you have X") before the response is returned.
+- Emergency detection runs before any response is surfaced.
+- Human override is always available to clinicians via the provider dashboard.
+- The project is not FDA-cleared, CE-marked, or otherwise certified as a medical device.
+- Not a replacement for qualified medical advice, diagnosis, or treatment.
+
+## 13. Quick start (self-host)
+
+```bash
+# 1. Backend
+cd app/backend
+cp .env.example .env
+# Edit .env — add OPENAI_API_KEY, PINECONE_API_KEY
+docker compose up -d
+docker exec wbc-telehealth-backend python -m src.rag.ingest
+
+# 2. (Optional) Telegram
+# In .env:
+#   TELEGRAM_BOT_TOKEN=<from @BotFather>
+#   TELEGRAM_ENABLED=true
+docker compose up -d --build
+
+# 3. Website
+cd website && npm install && npm run dev   # http://localhost:5173
+```
+
+| Container | Port | Service |
+|---|---|---|
+| wbc-telehealth-backend | 8000 | FastAPI + LangGraph |
+| wbc-telehealth-postgres | 5433 | PostgreSQL 16 |
+| wbc-telehealth-redis | 6379 | Redis 7 |
+
+## 14. Frequently asked questions
+
+**Is WBC Telehealth a diagnostic tool?**
+No. It is a triage support assistant — not a medical device. It helps patients understand the urgency of their symptoms and recommends next steps, but never diagnoses, prescribes, or replaces a qualified clinician.
+
+**Who is this built for?**
+Small clinics that want to pre-screen patients for diabetes-related symptoms before a visit, and patients who want a fast, plain-language read on whether they should self-manage, book an appointment, or seek emergency care.
+
+**Is there a hosted version?**
+No. The project is open source and must be self-hosted. There is no public production endpoint.
+
+**How does the AI decide between Green, Yellow, and Red?**
+Hybrid scoring: clinical rules (symptom thresholds, emergency keywords, ADA 2026 guidelines) combined with LLM contextual reasoning. The safety guardrail can escalate a level upward but never downward.
+
+**Is my conversation private?**
+Conversations are stored in the clinic's own PostgreSQL database for context across turns and intake review. There are no third-party analytics by default. Because the stack is self-hosted, the clinic controls the data.
+
+**What happens in a medical emergency?**
+If the assistant detects emergency keywords (e.g., loss of consciousness, severe chest pain, signs of DKA), it returns a RED triage and tells the patient to contact local emergency services. The disclaimer is shown on every response.
+
+**Can I use this for conditions other than diabetes?**
+The current knowledge base, rules, and prompts are tuned for diabetes pre-screening. The architecture (LangGraph agent + RAG + rule layer) is general — you can adapt it to other conditions by swapping the knowledge base and rule files.
+
+**What is the license?**
+AGPL-3.0. See the LICENSE file in the repository.
+
+**What AI models does it use?**
+OpenAI `gpt-4o-mini` for reasoning (configurable) and `text-embedding-3-small` for the vector knowledge base.
+
+## 15. Project links
+
+- **Website:** https://wbc-telehealth-project.vercel.app
+- **GitHub:** https://github.com/ajaysharmadeveloper/wbc-telehealth-project
+- **Discord:** https://discord.gg/Jw2THYBsX
+- **Organization:** Weekend Vibe Builders — https://weekend-vibe-builder.vercel.app/
+- **License:** AGPL-3.0
