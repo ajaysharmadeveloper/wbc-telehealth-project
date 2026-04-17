@@ -34,7 +34,7 @@ export const Moon = wrap(({ size, color, ...rest }) => (
   </svg>
 ));
 
-// ─── Problem Section — Clinic Side ───
+// ─── Problem Section - Clinic Side ───
 
 export const Building = wrap(({ size, color, ...rest }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
@@ -69,7 +69,7 @@ export const Wrench = wrap(({ size, color, ...rest }) => (
   </svg>
 ));
 
-// ─── Problem Section — Patient Side ───
+// ─── Problem Section - Patient Side ───
 
 export const UserX = wrap(({ size, color, ...rest }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
@@ -337,6 +337,21 @@ export const Whatsapp = wrap(({ size, color, ...rest }) => (
   </svg>
 ));
 
+export const Telegram = wrap(({ size, color, ...rest }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} {...rest}>
+    <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.46 8.32l-1.83 8.63c-.14.62-.5.77-1.01.48l-2.79-2.06-1.35 1.3c-.15.15-.28.28-.56.28l.2-2.85 5.2-4.7c.23-.2-.05-.31-.35-.12l-6.43 4.05-2.77-.87c-.6-.19-.62-.6.13-.89l10.83-4.18c.5-.18.94.12.77.93z"/>
+  </svg>
+));
+
+export const LayoutDashboard = wrap(({ size, color, ...rest }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
+    <rect x="3" y="3" width="7" height="9" rx="1"/>
+    <rect x="14" y="3" width="7" height="5" rx="1"/>
+    <rect x="14" y="12" width="7" height="9" rx="1"/>
+    <rect x="3" y="16" width="7" height="5" rx="1"/>
+  </svg>
+));
+
 export const Repeat = wrap(({ size, color, ...rest }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
     <polyline points="17 1 21 5 17 9"/>
@@ -349,5 +364,28 @@ export const Repeat = wrap(({ size, color, ...rest }) => (
 export const MedicalCross = wrap(({ size, color, ...rest }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
     <path d="M8 2h8v6h6v8h-6v6H8v-6H2V8h6z"/>
+  </svg>
+));
+
+export const Menu = wrap(({ size, color, ...rest }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+));
+
+export const X = wrap(({ size, color, ...rest }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+));
+
+export const Linkedin = wrap(({ size, color, ...rest }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...rest}>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/>
+    <rect x="2" y="9" width="4" height="12"/>
+    <circle cx="4" cy="4" r="2"/>
   </svg>
 ));

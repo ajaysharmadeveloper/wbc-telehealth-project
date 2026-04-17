@@ -1,0 +1,99 @@
+.triage-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.triage-card {
+  border-radius: 20px;
+  padding: 36px 28px;
+  text-align: center;
+}
+.triage-card.green {
+  background: var(--green-bg);
+  border: 2px solid #86efac;
+}
+.triage-card.yellow {
+  background: var(--yellow-bg);
+  border: 2px solid #fde047;
+}
+.triage-card.red {
+  background: var(--red-bg);
+  border: 2px solid #fca5a5;
+}
+
+.triage-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.triage-card.green .triage-dot {
+  background: var(--green);
+}
+.triage-card.yellow .triage-dot {
+  background: var(--yellow);
+}
+.triage-card.red .triage-dot {
+  background: var(--red);
+}
+
+.triage-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.triage-card.green h3 {
+  color: var(--green);
+}
+.triage-card.yellow h3 {
+  color: var(--yellow);
+}
+.triage-card.red h3 {
+  color: var(--red);
+}
+
+.triage-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-light);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 16px;
+}
+
+.triage-card p {
+  font-size: 14px;
+  color: var(--slate);
+  line-height: 1.7;
+}
+
+@media (max-width: 920px) {
+  .triage-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .triage-card {
+    padding: 28px 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  .triage-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .triage-card h3 {
+    font-size: 20px;
+  }
+  .triage-dot {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+}

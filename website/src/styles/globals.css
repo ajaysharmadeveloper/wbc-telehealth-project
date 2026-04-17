@@ -1,0 +1,157 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --teal: #0d9488;
+  --teal-light: #14b8a6;
+  --teal-dark: #0f766e;
+  --navy: #0f172a;
+  --navy-mid: #1e293b;
+  --navy-solid: #0f172a;
+  --slate: #334155;
+  --slate-light: #64748b;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --green: #16a34a;
+  --green-bg: #dcfce7;
+  --yellow: #ca8a04;
+  --yellow-bg: #fef9c3;
+  --red: #dc2626;
+  --red-bg: #fee2e2;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dark {
+  --navy: #f8fafc;
+  --navy-mid: #94a3b8;
+  --navy-solid: #070b14;
+  --slate: #94a3b8;
+  --slate-light: #cbd5e1;
+  --border: #334155;
+  --bg: #0b1120;
+  --white: #1e293b;
+  --green-bg: rgba(22, 163, 74, 0.15);
+  --yellow-bg: rgba(202, 138, 4, 0.15);
+  --red-bg: rgba(220, 38, 38, 0.15);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--navy);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: 96px 0;
+  transition: background-color 0.3s;
+}
+
+@media (max-width: 920px) {
+  .container {
+    padding: 0 20px;
+  }
+  .section {
+    padding: 72px 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .container {
+    padding: 0 16px;
+  }
+  .section {
+    padding: 56px 0;
+  }
+}
+
+.section-alt {
+  background: var(--white);
+  transition: background-color 0.3s;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Route transition (applied to <main key={pathname}>) */
+.route-fade {
+  animation: routeFade 0.35s ease forwards;
+}
+@keyframes routeFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keyboard focus ring (a11y) - only shows for keyboard users */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fade-in {
+    opacity: 1;
+    transform: none;
+  }
+}
