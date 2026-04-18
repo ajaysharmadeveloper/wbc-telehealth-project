@@ -96,6 +96,7 @@ const TEAM = [
       'https://media.licdn.com/dms/image/v2/D5603AQHIc_14E-l38w/profile-displayphoto-scale_100_100/B56Z0l4evYJgAc-/0/1774457057663?e=1778112000&v=beta&t=E1PNgiGTNEs5SaPUZSpkPbguRoxJOAlD9mdzwsY1qMs',
     linkedin: 'https://www.linkedin.com/in/ajaykumarsharma1996/',
     github: 'ajaysharmadeveloper',
+    website: 'https://www.ajaykumarsharma.co.in',
   },
   {
     name: 'Manish Sharma',
@@ -110,7 +111,8 @@ const TEAM = [
     name: 'Chanda Chanakya',
     role: 'UI & Experience',
     color: '#f59e0b',
-    photo: null,
+    photo:
+      'https://media.licdn.com/dms/image/v2/D5603AQHDQEjrYmEyBw/profile-displayphoto-crop_800_800/B56Z2btFisKYAI-/0/1776433787182?e=1778112000&v=beta&t=tQod_uTVsjwG_EHXsDQbpqdbQFwm_G-KtZscR5SniXA',
     linkedin: 'https://www.linkedin.com/in/chandachanakya/',
     github: null,
   },
@@ -337,6 +339,17 @@ export default function About() {
                       aria-label={`${member.name} on LinkedIn`}
                     >
                       <Linkedin size={16} />
+                    </a>
+                  )}
+                  {member.website && (
+                    <a
+                      className="team-social team-social-website"
+                      href={member.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${member.name} personal website`}
+                    >
+                      <Globe size={16} />
                     </a>
                   )}
                 </div>
